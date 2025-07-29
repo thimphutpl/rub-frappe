@@ -33,4 +33,4 @@ jobs:
       run: |
         ssh ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} "
           cd /home/frappe/web &&
-          touch shooting.txt
+          touch shooting.txt"
