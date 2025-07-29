@@ -27,10 +27,10 @@ jobs:
         ssh -o StrictHostKeyChecking=no \
           ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
           "echo '✅ Connected to $(hostname)'"
-
-    # 4. Deployment commands
-    # - name: Deploy application
-    #   run: |
-    #     ssh ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} "
-    #       cd /home/frappe/web &&
-    #       git pull origin main "
+        
+    4. Deployment commands
+    - name: Deploy application
+      run: |
+        ssh ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} "
+          cd /home/frappe/web &&
+          git clone https://github.com/thimphutpl/rub-frappe.git
