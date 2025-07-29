@@ -28,7 +28,7 @@ jobs:
           ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
           "echo '✅ Connected to $(hostname)'"
         
-    4. Deployment commands
+    #4. Deployment commands
     - name: Deploy application
       run: |
         ssh ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} "
