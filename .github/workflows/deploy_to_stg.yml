@@ -2,35 +2,42 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [ "main" ]  # Trigger on pushes to main branch
-  workflow_dispatch:      # Allow manual triggers
+    branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout code
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 2. Setup SSH
-    - name: Add SSH Key
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # 2. Setup SSH with your production server key
+      - name: Add SSH Key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      # 3. Verify production server access
+      - name: Test production server connection
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
+            "echo '✅ Production server access confirmed'"
 
-    # 3. Test connection
-    - name: Verify SSH access
-      run: |
-        ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
-          "echo '✅ Connected to $(hostname)'"
-        
-    #4. Deployment commands
-    - name: Deploy application
-      run: |
-        ssh ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} "
-          cd /home/frappe/web &&
-          docker run hello-world"
+      # 4. Deployment commands
+      - name: Deploy application
+        run: |
+          # First deploy to production server
+          ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
+            "docker exec erpnext-docker-frappe-1 bash -c 'cd /home/frappe/frappe-bench/apps/frappe && git pull upstream main'"
+
+          # Then deploy to internal server using the key stored on production server
+          ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
+            "ssh -i /home/rubovc/key -o StrictHostKeyChecking=no rubovc@172.20.40.11 \
+            'docker exec erpnext-docker-frappe-1 bash -c \"cd /home/frappe/frappe-bench/apps/frappe
+             && git pull upstream main && bench migrate && bench clear-cache\"'"
