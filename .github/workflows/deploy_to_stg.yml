@@ -39,5 +39,4 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
             ${{ secrets.PRODUCTION_SERVER_USER }}@${{ secrets.PRODUCTION_SERVER_IP }} \
             "ssh -i /home/rubovc/key -o StrictHostKeyChecking=no rubovc@172.20.40.11 \
-            'docker exec erpnext-docker-frappe-1 bash -c \"cd /home/frappe/frappe-bench/apps/frappe
-             && git pull upstream main && bench migrate && bench clear-cache\"'"
+            'docker exec erpnext-docker-frappe-1 bash -c \"cd /home/frappe/frappe-bench/apps/frappe  && git pull upstream main && bench migrate && bench clear-cache\"'"
