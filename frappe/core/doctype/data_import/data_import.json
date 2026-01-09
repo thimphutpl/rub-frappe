@@ -40,14 +40,14 @@
    "set_only_once": 1
   },
   {
-   "fieldname": "import_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Import Type",
-   "options": "\nInsert New Records\nUpdate Existing Records",
-   "reqd": 1,
-   "set_only_once": 1
-  },
+    "fieldname": "import_type",
+    "fieldtype": "Select",
+    "in_list_view": 1,
+    "label": "Import Type",
+    "options": "\nInsert New Records\nUpdate Existing Records\nInsert Child Records",
+    "reqd": 1,
+    "set_only_once": 1
+   },
   {
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "import_file",
@@ -167,7 +167,14 @@
    "hidden": 1,
    "label": "Payload Count",
    "read_only": 1
-  }
+  },
+  {
+    "depends_on": "eval:doc.import_type == \"Insert Child Records\"",
+    "fieldname": "child_doctype",
+    "fieldtype": "Link",
+    "label": "Child Doctype",
+    "options": "DocType"
+   }
  ],
  "hide_toolbar": 1,
  "links": [],

@@ -22,6 +22,7 @@ INVALID_VALUES = ("", None)
 MAX_ROWS_IN_PREVIEW = 10
 INSERT = "Insert New Records"
 UPDATE = "Update Existing Records"
+INSERT_CHILD = "Insert Child Records"
 DURATION_PATTERN = re.compile(r"^(?:(\d+d)?((^|\s)\d+h)?((^|\s)\d+m)?((^|\s)\d+s)?)$")
 
 
@@ -251,6 +252,8 @@ class Importer:
 			return self.insert_record(doc)
 		elif self.import_type == UPDATE:
 			return self.update_record(doc)
+		elif self.import_type == INSERT_CHILD:
+			return self.insert_child_record(doc)	
 
 	def insert_record(self, doc):
 		meta = frappe.get_meta(self.doctype)
@@ -274,25 +277,132 @@ class Importer:
 
 	def update_record(self, doc):
 		id_field = get_id_field(self.doctype)
-		existing_doc = frappe.get_doc(self.doctype, doc.get(id_field.fieldname))
+		parent_id = doc.get(id_field.fieldname)
 
-		updated_doc = frappe.get_doc(self.doctype, doc.get(id_field.fieldname))
+		if not parent_id or not frappe.db.exists(self.doctype, parent_id):
+			frappe.throw(_("Parent {0} with ID {1} not found").format(self.doctype, parent_id))
 
-		updated_doc.update(doc)
+		parent_doc = frappe.get_doc(self.doctype, parent_id)
 
-		if get_diff(existing_doc, updated_doc):
-			# update doc if there are changes
-			updated_doc.flags.updater_reference = {
-				"doctype": self.data_import.doctype,
-				"docname": self.data_import.name,
-				"label": _("via Data Import"),
-			}
-			updated_doc.save()
-			return updated_doc
-		else:
-			# throw if no changes
-			frappe.throw(_("No changes to update"))
+		meta = frappe.get_meta(self.doctype)
+		for df in meta.get_table_fields():
+			child_table_name = df.fieldname
+			child_rows = doc.get(child_table_name)
+			if not child_rows:
+				continue
 
+			child_doctype = df.options
+
+			# Collect existing keys and normalize
+			existing_keys = {row.salary_component.strip().lower(): row for row in parent_doc.get(child_table_name)}
+
+			for child in child_rows:
+				if not isinstance(child, frappe._dict):
+					child = frappe._dict(child)
+
+				child.doctype = child_doctype
+				key = child.salary_component.strip().lower()  # normalize
+
+				if key in existing_keys:
+					# Update existing row using dot notation
+					existing_row = existing_keys[key]
+					for k, v in child.items():
+						if k not in ["name", "parent", "parentfield", "parenttype"]:
+							setattr(existing_row, k, v)
+					continue
+
+				# Append new child row
+				parent_doc.append(child_table_name, child)
+				existing_keys[key] = child  # track newly added row
+
+		parent_doc.save()
+		return parent_doc
+	# def insert_child_record(self, doc):
+	# 	"""
+	# 	Insert only child table rows for an existing parent.
+	# 	The parent must exist (found by 'name' or ID field)
+	# 	"""
+	# 	id_field = get_id_field(self.doctype)
+	# 	parent_id = doc.get(id_field.fieldname)
+
+	# 	if not parent_id or not frappe.db.exists(self.doctype, parent_id):
+	# 		frappe.throw(_("Parent {0} with ID {1} not found").format(self.doctype, parent_id))
+
+	# 	parent_doc = frappe.get_doc(self.doctype, parent_id)
+
+	# 	# Loop through child tables in doc
+	# 	meta = frappe.get_meta(self.doctype)
+	# 	for df in meta.get_table_fields():
+	# 		child_table_name = df.fieldname
+	# 		child_rows = doc.get(child_table_name)
+	# 		if not child_rows:
+	# 			continue
+
+	# 		child_doctype = df.options  # THIS is the actual child DocType
+
+	# 		for child in child_rows:
+	# 			# Ensure the child row is a dict and has doctype
+	# 			if not isinstance(child, frappe._dict):
+	# 				child = frappe._dict(child)
+
+	# 			# set doctype if missing
+	# 			child.doctype = child_doctype
+
+	# 			# Check if child row already exists
+	# 			child_id_field = get_id_field(child_doctype)
+	# 			if child.get(child_id_field.fieldname) and frappe.db.exists(child_doctype, child[child_id_field.fieldname]):
+	# 				continue  # skip duplicates
+
+	# 			parent_doc.append(child_table_name, child)
+
+	# 	parent_doc.save()
+	# 	return parent_doc
+	def insert_child_record(self, doc):
+		"""
+		Insert only child table rows for an existing parent.
+		Prevents duplicates based on a unique key (salary_component) and updates existing rows.
+		"""
+		id_field = get_id_field(self.doctype)
+		parent_id = doc.get(id_field.fieldname)
+
+		if not parent_id or not frappe.db.exists(self.doctype, parent_id):
+			frappe.throw(_("Parent {0} with ID {1} not found").format(self.doctype, parent_id))
+
+		parent_doc = frappe.get_doc(self.doctype, parent_id)
+
+		meta = frappe.get_meta(self.doctype)
+		for df in meta.get_table_fields():
+			child_table_name = df.fieldname
+			child_rows = doc.get(child_table_name)
+			if not child_rows:
+				continue
+
+			child_doctype = df.options
+
+			# Collect existing keys and normalize
+			existing_keys = {row.salary_component.strip().lower(): row for row in parent_doc.get(child_table_name)}
+
+			for child in child_rows:
+				if not isinstance(child, frappe._dict):
+					child = frappe._dict(child)
+
+				child.doctype = child_doctype
+				key = child.salary_component.strip().lower()  # normalize
+
+				if key in existing_keys:
+					# Update existing row using dot notation
+					existing_row = existing_keys[key]
+					for k, v in child.items():
+						if k not in ["name", "parent", "parentfield", "parenttype"]:
+							setattr(existing_row, k, v)
+					continue
+
+				# Append new child row
+				parent_doc.append(child_table_name, child)
+				existing_keys[key] = child  # track newly added row
+
+		parent_doc.save()
+		return parent_doc
 	def get_eta(self, current, total, processing_time):
 		self.last_eta = getattr(self, "last_eta", 0)
 		remaining = total - current
@@ -1069,12 +1179,12 @@ def build_fields_dict_for_column_matching(parent_doctype):
 	Build a dict with various keys to match with column headers and value as docfield
 	The keys can be label or fieldname
 	{
-	        'Customer': df1,
-	        'customer': df1,
-	        'Due Date': df2,
-	        'due_date': df2,
-	        'Item Code (Sales Invoice Item)': df3,
-	        'Sales Invoice Item:item_code': df3,
+			'Customer': df1,
+			'customer': df1,
+			'Due Date': df2,
+			'due_date': df2,
+			'Item Code (Sales Invoice Item)': df3,
+			'Sales Invoice Item:item_code': df3,
 	}
 	"""
 

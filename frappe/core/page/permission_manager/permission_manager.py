@@ -34,7 +34,7 @@ def get_roles_and_doctypes():
 	doctypes = frappe.get_all(
 		"DocType",
 		filters={
-			"istable": 0,
+			# "istable": 0,
 			"name": ("not in", ",".join(not_allowed_in_permission_manager)),
 		},
 		or_filters={"ifnull(restrict_to_domain, '')": "", "restrict_to_domain": ("in", active_domains)},

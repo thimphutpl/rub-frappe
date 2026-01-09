@@ -624,8 +624,9 @@ class User(Document):
 				exists.append(d.role)
 
 	def validate_username(self):
-		if not self.username and self.is_new() and self.first_name:
-			self.username = frappe.scrub(self.first_name)
+		student_code = frappe.db.get_value("Student", {"student_email_id": self.name}, "name")
+		if not self.username and self.is_new() and student_code:
+			self.username = frappe.scrub(student_code)
 
 		if not self.username:
 			return

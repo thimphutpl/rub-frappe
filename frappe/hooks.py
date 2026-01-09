@@ -114,6 +114,8 @@ permission_query_conditions = {
 	"Workflow Action": "frappe.workflow.doctype.workflow_action.workflow_action.get_permission_query_conditions",
 	"Prepared Report": "frappe.core.doctype.prepared_report.prepared_report.get_permission_query_condition",
 	"File": "frappe.core.doctype.file.file.get_permission_query_conditions",
+	"Call For Paper Panel Mark": "education.event_management.doctype.call_for_paper_panel_mark.call_for_paper_panel_mark.get_permission_query_conditions",
+	"Full Paper Panel Mark": "education.event_management.doctype.full_paper_panel_mark.full_paper_panel_mark.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -131,6 +133,7 @@ has_permission = {
 	"File": "frappe.core.doctype.file.file.has_permission",
 	"Prepared Report": "frappe.core.doctype.prepared_report.prepared_report.has_permission",
 	"Notification Settings": "frappe.desk.doctype.notification_settings.notification_settings.has_permission",
+
 }
 
 has_website_permission = {"Address": "frappe.contacts.doctype.address.address.has_website_permission"}
@@ -192,6 +195,12 @@ doc_events = {
 	"Page": {
 		"on_update": "frappe.cache_manager.build_domain_restriced_page_cache",
 	},
+	"Event Registration": {
+        "after_insert": "education.event_management.web_form.event_registration.event_registration.after_insert"
+    },
+	# "Employee": {
+    #     "after_insert": "erpnext.custom_utils.create_user"
+    # }
 }
 
 scheduler_events = {
