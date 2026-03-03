@@ -169,7 +169,7 @@
   },
   {
    "bold": 1,
-   "default": "1",
+   "default": "0",
    "depends_on": "eval:doc.__islocal",
    "fieldname": "send_welcome_email",
    "fieldtype": "Check",
@@ -743,8 +743,7 @@
    "description": "Redirect to the selected app after login",
    "fieldname": "default_app",
    "fieldtype": "Select",
-   "label": "Default App",
-   "options": ""
+   "label": "Default App"
   },
   {
    "collapsible": 1,
@@ -874,7 +873,7 @@
   }
  ],
  "make_attachments_public": 1,
- "modified": "2025-03-17 11:29:39.254304",
+ "modified": "2026-03-03 14:20:32.488307",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",
