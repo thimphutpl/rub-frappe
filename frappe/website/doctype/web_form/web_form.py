@@ -36,13 +36,14 @@ class WebForm(WebsiteGenerator):
 		allow_multiple: DF.Check
 		allow_print: DF.Check
 		allowed_embedding_domains: DF.SmallText | None
+		amended_from: DF.Link | None
 		anonymous: DF.Check
 		apply_document_permissions: DF.Check
 		banner_image: DF.AttachImage | None
 		breadcrumbs: DF.Code | None
 		button_label: DF.Data | None
 		client_script: DF.Code | None
-		condition: DF.Code | None
+		condition_json: DF.JSON | None
 		custom_css: DF.Code | None
 		doc_type: DF.Link
 		introduction_text: DF.TextEditor | None

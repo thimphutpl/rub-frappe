@@ -41,28 +41,63 @@ def get_apps():
 	return app_list
 
 
+# def get_route(app, allowed_workspaces=None):
+# 	if not allowed_workspaces:
+# 		return "/app"
+
+# 	route = app.get("route") if app and app.get("route") else "/apps"
+
+# 	# Check if user has access to default workspace, if not, pick first workspace user has access to
+# 	if route.startswith("/app/"):
+# 		ws = route.split("/")[2]
+
+# 		for allowed_ws in allowed_workspaces:
+# 			if allowed_ws.get("name").lower() == ws.lower():
+# 				return route
+
+# 		module_app = frappe.local.module_app
+# 		for allowed_ws in allowed_workspaces:
+# 			module = allowed_ws.get("module")
+# 			if module and module_app.get(module.lower()) == app.get("name"):
+# 				return f"/app/{slug(allowed_ws.name.lower())}"
+# 		return f"/app/{slug(allowed_workspaces[0].get('name').lower())}"
+# 	else:
+# 		return route
+
 def get_route(app, allowed_workspaces=None):
-	if not allowed_workspaces:
-		return "/app"
+    import frappe
+    from frappe.utils import slug
 
-	route = app.get("route") if app and app.get("route") else "/apps"
+    # --- Role-based landing page hack ---
+    if frappe.session.user != "Guest":
+        roles = frappe.get_roles()
+        if "Student" in roles:
+            return "/app/student-dashboard"
+        elif "Tutor" in roles:
+            return "/app/tutor-dashboard"
+    # -------------------------------------
 
-	# Check if user has access to default workspace, if not, pick first workspace user has access to
-	if route.startswith("/app/"):
-		ws = route.split("/")[2]
+    if not allowed_workspaces:
+        return "/app"
 
-		for allowed_ws in allowed_workspaces:
-			if allowed_ws.get("name").lower() == ws.lower():
-				return route
+    route = app.get("route") if app and app.get("route") else "/apps"
 
-		module_app = frappe.local.module_app
-		for allowed_ws in allowed_workspaces:
-			module = allowed_ws.get("module")
-			if module and module_app.get(module.lower()) == app.get("name"):
-				return f"/app/{slug(allowed_ws.name.lower())}"
-		return f"/app/{slug(allowed_workspaces[0].get('name').lower())}"
-	else:
-		return route
+    # Check if user has access to default workspace, if not, pick first workspace user has access to
+    if route.startswith("/app/"):
+        ws = route.split("/")[2]
+
+        for allowed_ws in allowed_workspaces:
+            if allowed_ws.get("name").lower() == ws.lower():
+                return route
+
+        module_app = frappe.local.module_app
+        for allowed_ws in allowed_workspaces:
+            module = allowed_ws.get("module")
+            if module and module_app.get(module.lower()) == app.get("name"):
+                return f"/app/{slug(allowed_ws.name.lower())}"
+        return f"/app/{slug(allowed_workspaces[0].get('name').lower())}"
+    else:
+        return route
 
 
 def is_desk_apps(apps):

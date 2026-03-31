@@ -116,6 +116,7 @@ permission_query_conditions = {
 	"File": "frappe.core.doctype.file.file.get_permission_query_conditions",
 	"Call For Paper Panel Mark": "education.event_management.doctype.call_for_paper_panel_mark.call_for_paper_panel_mark.get_permission_query_conditions",
 	"Full Paper Panel Mark": "education.event_management.doctype.full_paper_panel_mark.full_paper_panel_mark.get_permission_query_conditions",
+	"Events":"education.event_management.doctype.events.events.get_permission_query_conditions"
 }
 
 has_permission = {
@@ -132,7 +133,7 @@ has_permission = {
 	"Workflow Action": "frappe.workflow.doctype.workflow_action.workflow_action.has_permission",
 	"File": "frappe.core.doctype.file.file.has_permission",
 	"Prepared Report": "frappe.core.doctype.prepared_report.prepared_report.has_permission",
-	"Notification Settings": "frappe.desk.doctype.notification_settings.notification_settings.has_permission",
+	"Notification Settings": "frappe.desk.doctype.notification_settings.notification_settings.has_permission"
 
 }
 
@@ -196,11 +197,11 @@ doc_events = {
 		"on_update": "frappe.cache_manager.build_domain_restriced_page_cache",
 	},
 	"Event Registration": {
-        "after_insert": "education.event_management.web_form.event_registration.event_registration.after_insert"
-    },
+		"after_insert": "education.event_management.web_form.event_registration.event_registration.after_insert"
+	},
 	# "Employee": {
-    #     "after_insert": "erpnext.custom_utils.create_user"
-    # }
+	#	 "after_insert": "erpnext.custom_utils.create_user"
+	# }
 }
 
 scheduler_events = {
@@ -469,10 +470,12 @@ extend_bootinfo = [
 get_changelog_feed = "frappe.desk.doctype.changelog_feed.changelog_feed.get_feed"
 
 export_python_type_annotations = True
-
-standard_navbar_items = [
+def get_standard_navbar_items():
+	import frappe
+	frappe.throw("here")
+	items = [
 	{
-		"item_label": "My Profile",
+		"item_label": "My Profiles",
 		"item_type": "Route",
 		"route": "/app/user-profile",
 		"is_standard": 1,
@@ -531,6 +534,18 @@ standard_navbar_items = [
 		"is_standard": 1,
 	},
 ]
+
+	# Add Student Dashboard only if user has Student role
+	if "Student" in frappe.get_roles(frappe.session.user):
+		items.append({
+			"item_label": "Student Dashboard",
+			"item_type": "Route",
+			"route": "/student-dashboard",
+			"is_standard": 1
+		})
+	
+	return items
+standard_navbar_items = "frappe.hooks.get_standard_navbar_items"
 
 standard_help_items = [
 	{

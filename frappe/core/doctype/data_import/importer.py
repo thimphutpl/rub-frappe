@@ -294,6 +294,7 @@ class Importer:
 			child_doctype = df.options
 
 			# Collect existing keys and normalize
+		
 			existing_keys = {row.salary_component.strip().lower(): row for row in parent_doc.get(child_table_name)}
 
 			for child in child_rows:
@@ -317,6 +318,28 @@ class Importer:
 
 		parent_doc.save()
 		return parent_doc
+
+
+	# def update_record(self, doc):
+	# 	id_field = get_id_field(self.doctype)
+	# 	existing_doc = frappe.get_doc(self.doctype, doc.get(id_field.fieldname))
+
+	# 	updated_doc = frappe.get_doc(self.doctype, doc.get(id_field.fieldname))
+
+	# 	updated_doc.update(doc)
+
+	# 	if get_diff(existing_doc, updated_doc):
+	# 		# update doc if there are changes
+	# 		updated_doc.flags.updater_reference = {
+	# 			"doctype": self.data_import.doctype,
+	# 			"docname": self.data_import.name,
+	# 			"label": _("via Data Import"),
+	# 		}
+	# 		updated_doc.save()
+	# 		return updated_doc
+	# 	else:
+	# 		# throw if no changes
+	# 		frappe.throw(_("No changes to update"))
 	# def insert_child_record(self, doc):
 	# 	"""
 	# 	Insert only child table rows for an existing parent.

@@ -34,7 +34,17 @@ def get_context(context):
 			if frappe.session.data.user_type == "Website User":
 				redirect_to = get_default_path() or get_home_page()
 			else:
-				redirect_to = get_default_path() or "/app"
+				# Get all roles of the user
+				roles = frappe.get_roles(frappe.session.user)
+
+				# Redirect based on role
+				if "Student" in roles:
+					redirect_to =  "/app/student-dashboard"   # URL of Student Dashboard
+				elif "Tutor" in roles:
+					redirect_to =  "/app/tutor-dashboard"     # URL of Tutor Dashboard
+				else:
+					redirect_to = "/app"  
+				# redirect_to = get_default_path() or "/app"
 
 		if redirect_to != "login":
 			frappe.local.flags.redirect_location = redirect_to
