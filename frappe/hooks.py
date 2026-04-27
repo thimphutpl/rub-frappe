@@ -116,7 +116,10 @@ permission_query_conditions = {
 	"File": "frappe.core.doctype.file.file.get_permission_query_conditions",
 	"Call For Paper Panel Mark": "education.event_management.doctype.call_for_paper_panel_mark.call_for_paper_panel_mark.get_permission_query_conditions",
 	"Full Paper Panel Mark": "education.event_management.doctype.full_paper_panel_mark.full_paper_panel_mark.get_permission_query_conditions",
-	"Events":"education.event_management.doctype.events.events.get_permission_query_conditions"
+	"Events":"education.event_management.doctype.events.events.get_permission_query_conditions",
+	"Call For Paper":"education.event_management.doctype.call_for_paper.call_for_paper.get_permission_query_conditions",
+	"Full Paper":"education.event_management.doctype.full_paper.full_paper.get_permission_query_conditions",
+	"Leave Application": "hrms.hr.doctype.leave_application.leave_application.get_permission_query_conditions",
 }
 
 has_permission = {
