@@ -34,7 +34,7 @@
 
 .navbar-home {
 	img {
-		max-height: 28px;
+		max-height: 50px;
 		width: auto;
 	}
 }
@@ -102,4 +102,16 @@
 		padding: 0rem 1rem;
 		@extend .my-auto;
 	}
+}
+
+// .navbar {
+//     background: #92c5f7 !important;
+// }
+.navbar {
+    background: linear-gradient(
+        to right,
+        #92C5F7,
+        #BDDDF2,
+        #92C5F7
+    ) !important;
 }
