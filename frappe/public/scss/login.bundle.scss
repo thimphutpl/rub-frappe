@@ -114,6 +114,7 @@ body {
 				@include get_textstyle("base", "medium");
 				color: var(--text-gray-700);
 				background: var(--gray-100);
+	  
 				box-shadow: none;
 				border: none;
 				display: flex;
@@ -207,7 +208,7 @@ body {
 	font-weight: 600;
 
 	img {
-		max-height: 42px;
+		max-height: 100px;
 	}
 
 	h4 {

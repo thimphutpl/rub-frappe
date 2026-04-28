@@ -3,7 +3,8 @@
 	.navbar-nav {
 		align-items: center;
 		.nav-item {
-			height: var(--navbar-height);
+			// height: var(--navbar-height);
+			height: 70px;
 			display: flex;
 			align-items: center;
 
@@ -38,7 +39,8 @@
 
 .navbar-light {
 	border-bottom: 1px solid $border-color;
-	background: $navbar-bg;
+	// background: $navbar-bg;
+	background: #92C5F7;
 
 	.navbar-toggler .icon {
 		stroke: none;

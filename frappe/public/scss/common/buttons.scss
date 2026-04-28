@@ -95,15 +95,17 @@
 }
 
 .btn.btn-primary {
-	background-color: var(--btn-primary);
+	// background-color: var(--btn-primary);
+	background-color:  #92C5F7;
 	color: var(--neutral);
 	white-space: nowrap;
 	--icon-stroke: currentColor;
 	--icon-fill-bg: var(--btn-primary);
 
 	&:active {
-		color: var(--gray-100) !important;
-		background-color: var(--invert-neutral) !important;
+		border: 1px solid #92C5F7 !important;
+		// color: var(--gray-100) !important;
+		// background-color: var(--invert-neutral) !important;
 	}
 }
 
