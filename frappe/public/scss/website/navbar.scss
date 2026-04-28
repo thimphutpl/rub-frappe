@@ -40,8 +40,11 @@
 .navbar-light {
 	border-bottom: 1px solid $border-color;
 	// background: $navbar-bg;
-	background: #92C5F7;
-
+	background:  linear-gradient(to right,
+        #92C5F7,
+        #BDDDF2,
+        #d0d8df
+    );
 	.navbar-toggler .icon {
 		stroke: none;
 	}
