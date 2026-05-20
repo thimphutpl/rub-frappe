@@ -227,35 +227,66 @@ def read_multi_pdf(output: PdfWriter) -> bytes:
 
 
 @frappe.whitelist(allow_guest=True)
+# def download_pdf(
+# 	doctype: str,
+# 	name: str,
+# 	format=None,
+# 	doc=None,
+# 	no_letterhead=0,
+# 	language=None,
+# 	letterhead=None,
+# 	pdf_generator: Literal["wkhtmltopdf", "chrome"] | None = None,
+# ):
+# 	doc = doc or frappe.get_doc(doctype, name)
+# 	validate_print_permission(doc)
+
+# 	with print_language(language):
+# 		pdf_file = frappe.get_print(
+# 			doctype,
+# 			name,
+# 			format,
+# 			doc=doc,
+# 			as_pdf=True,
+# 			letterhead=letterhead,
+# 			no_letterhead=no_letterhead,
+# 			pdf_generator=pdf_generator,
+# 		)
+
+# 	frappe.local.response.filename = "{name}.pdf".format(name=name.replace(" ", "-").replace("/", "-"))
+# 	frappe.local.response.filecontent = pdf_file
+# 	frappe.local.response.type = "pdf"
 def download_pdf(
-	doctype: str,
-	name: str,
-	format=None,
-	doc=None,
-	no_letterhead=0,
-	language=None,
-	letterhead=None,
-	pdf_generator: Literal["wkhtmltopdf", "chrome"] | None = None,
+        doctype: str,
+        name: str,
+        format=None,
+        doc=None,
+        no_letterhead=0,
+        language=None,
+        letterhead=None,
+        pdf_generator: Literal["wkhtmltopdf", "chrome"] | None = None,
 ):
-	doc = doc or frappe.get_doc(doctype, name)
-	validate_print_permission(doc)
+        doc = doc or frappe.get_doc(doctype, name)
+        validate_print_permission(doc)
 
-	with print_language(language):
-		pdf_file = frappe.get_print(
-			doctype,
-			name,
-			format,
-			doc=doc,
-			as_pdf=True,
-			letterhead=letterhead,
-			no_letterhead=no_letterhead,
-			pdf_generator=pdf_generator,
-		)
+        with print_language(language):
+                # STEP 1: Get HTML using `as_pdf=False` (returns HTML string)
+                html = frappe.get_print(
+                        doctype,
+                        name,
+                        format,
+                        doc=doc,
+                        as_pdf=False,  # Use as_pdf=False to get HTML
+                        letterhead=letterhead,
+                        no_letterhead=no_letterhead,
+                )
+                
+                # STEP 2: Convert HTML to PDF
+                from frappe.utils.pdf import get_pdf
+                pdf_file = get_pdf(html, {"orientation": "Portrait"})
 
-	frappe.local.response.filename = "{name}.pdf".format(name=name.replace(" ", "-").replace("/", "-"))
-	frappe.local.response.filecontent = pdf_file
-	frappe.local.response.type = "pdf"
-
+        frappe.local.response.filename = "{name}.pdf".format(name=name.replace(" ", "-").replace("/", "-"))
+        frappe.local.response.filecontent = pdf_file
+        frappe.local.response.type = "pdf"
 
 @frappe.whitelist()
 def report_to_pdf(html, orientation="Landscape"):
