@@ -83,7 +83,8 @@ def get_pdf(html, options=None, output: PdfWriter | None = None):
 	html = scrub_urls(html)
 	html, options = prepare_options(html, options)
 
-	options.update({"disable-javascript": "", "disable-local-file-access": ""})
+	#options.update({"disable-javascript": "", "disable-local-file-access": ""})
+	options.update({"disable-javascript": "", "enable-local-file-access": ""})
 
 	filedata = ""
 	if Version(get_wkhtmltopdf_version()) > Version("0.12.3"):
