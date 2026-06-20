@@ -971,7 +971,12 @@ class Document(BaseDocument):
 			cancelled_links.extend(result[1])
 
 		if invalid_links:
-			msg = ", ".join(each[2] for each in invalid_links)
+			msg = ", ".join(each['label']+": "+str(each['value']) for each in invalid_links)
+			# for each in invalid_links:
+			# 	frappe.throw(
+			# 		str(each),
+			# 		title="BROKEN LINK TRACE"
+			# 	)
 			frappe.throw(_("Could not find {0}").format(msg), frappe.LinkValidationError)
 
 		if cancelled_links:

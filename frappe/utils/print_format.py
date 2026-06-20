@@ -282,7 +282,11 @@ def download_pdf(
                 
                 # STEP 2: Convert HTML to PDF
                 from frappe.utils.pdf import get_pdf
-                pdf_file = get_pdf(html, {"orientation": "Portrait"})
+                pdf_file = get_pdf(
+                    html, 
+                    {"orientation": "Portrait"},
+                    generator="chrome"  # ← THIS FORCES CHROME
+                )
 
         frappe.local.response.filename = "{name}.pdf".format(name=name.replace(" ", "-").replace("/", "-"))
         frappe.local.response.filecontent = pdf_file

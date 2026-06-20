@@ -33,6 +33,7 @@
   "brand_html",
   "set_banner_from_image",
   "favicon",
+  "site_tagline",
   "top_bar",
   "top_bar_items",
   "hide_login",
@@ -476,6 +477,11 @@
    "fieldname": "show_footer_on_login",
    "fieldtype": "Check",
    "label": "Show footer on login"
+  },
+  {
+   "fieldname": "site_tagline",
+   "fieldtype": "Data",
+   "label": "Site Tagline"
   }
  ],
  "icon": "fa fa-cog",
@@ -483,7 +489,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-08 11:50:34.750809",
+ "modified": "2026-04-29 09:20:05.124051",
  "modified_by": "Administrator",
  "module": "Website",
  "name": "Website Settings",
@@ -504,6 +510,7 @@
    "role": "All"
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

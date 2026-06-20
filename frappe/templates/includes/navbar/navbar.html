@@ -8,6 +8,10 @@
 			{%- else -%}
 				<span>{{ (frappe.get_hooks("brand_html") or [_("Home")])[0] }}</span>
 			{%- endif -%}
+			{% set text = frappe.db.get_single_value("Website Settings", "site_tagline") %}
+			{% if text %}
+				<span class="ml-2 navbar-custom-text">{{ text }}</span>
+			{% endif %}
 		</a>
 		<button class="navbar-toggler" type="button"
 			data-toggle="collapse"

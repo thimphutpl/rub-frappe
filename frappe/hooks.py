@@ -475,10 +475,10 @@ get_changelog_feed = "frappe.desk.doctype.changelog_feed.changelog_feed.get_feed
 export_python_type_annotations = True
 def get_standard_navbar_items():
 	import frappe
-	frappe.throw("here")
+	roles = frappe.get_roles(frappe.session.user)
 	items = [
 	{
-		"item_label": "My Profiles",
+		"item_label": "Student Dashboard" if "Student" in roles else "Tutor Dashboard" if "Tutor" in roles else "My Profile",
 		"item_type": "Route",
 		"route": "/app/user-profile",
 		"is_standard": 1,

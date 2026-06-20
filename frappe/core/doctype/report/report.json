@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "autoname": "field:report_name",
  "creation": "2013-03-09 15:45:57",
  "doctype": "DocType",
@@ -202,7 +203,7 @@
  "idx": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-12 17:08:09.629411",
+ "modified": "2026-04-28 22:38:08.498864",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Report",

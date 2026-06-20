@@ -748,6 +748,18 @@ class User(Document):
 			self.time_zone = get_system_timezone()
 
 	def check_roles_added(self):
+		student = employee = system_manager = 0
+		for role in self.roles:
+			if role.role == "Student":
+				student = 1
+			if role.role == "Employee":
+				employee = 1
+			if role.role == "System Manager":
+				system_manager = 1
+		if system_manager == 1 and frappe.session.user != "Administrator":
+			frappe.throw("Only Administrator can assign <b>System Manager</b> role to other users.", title="Role Assigment Error")
+		if student == 1 and employee == 1:
+			frappe.throw("User cannot be assigned with both <b>Student</b> and <b>Employee</b> roles.", title="Role Assigment Error")
 		if self.user_type != "System User" or self.roles or not self.is_new():
 			return
 
@@ -809,10 +821,10 @@ def update_password(
 	"""Update password for the current user.
 
 	Args:
-	        new_password (str): New password.
-	        logout_all_sessions (int, optional): If set to 1, all other sessions will be logged out. Defaults to 0.
-	        key (str, optional): Password reset key. Defaults to None.
-	        old_password (str, optional): Old password. Defaults to None.
+			new_password (str): New password.
+			logout_all_sessions (int, optional): If set to 1, all other sessions will be logged out. Defaults to 0.
+			key (str, optional): Password reset key. Defaults to None.
+			old_password (str, optional): Old password. Defaults to None.
 	"""
 
 	if len(new_password) > MAX_PASSWORD_SIZE:
@@ -1126,12 +1138,37 @@ def get_active_website_users():
 
 
 def get_permission_query_conditions(user):
+	u = frappe.session.user
+	user_roles = frappe.get_roles(u)
 	if user == "Administrator":
 		return ""
-	else:
-		return """(`tabUser`.name not in ({standard_users}))""".format(
-			standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
+	if "System Manager" in user_roles or "ICT Admin" in user_roles:
+		company = frappe.db.get_value("Employee", {"user_id": u}, "company")
+
+		if company:
+			return """(`tabUser`.name IN (
+				SELECT user_id
+				FROM `tabEmployee`
+				WHERE company = {company}
+			))""".format(
+				company=frappe.db.escape(company)
+			)
+	if "Employee" in user_roles:
+		return """(`tabUser`.name = {user})""".format(
+			user=frappe.db.escape(u)
 		)
+	return """(`tabUser`.name not in ({standard_users}))""".format(
+		standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
+	)
+
+
+	
+	# if user == "Administrator":
+	# 	return ""
+	# else:
+	# 	return """(`tabUser`.name not in ({standard_users}))""".format(
+	# 		standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
+	# 	)
 
 
 def has_permission(doc, user):
@@ -1333,3 +1370,5 @@ def impersonate(user: str, reason: str):
 	notification.set("type", "Alert")
 	notification.insert(ignore_permissions=True)
 	frappe.local.login_manager.impersonate(user)
+
+

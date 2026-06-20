@@ -851,7 +851,13 @@ class BaseDocument:
 						notify_link_count(doctype, docname)
 
 					if not values.name:
-						invalid_links.append((df.fieldname, docname, get_msg(df, docname)))
+						# invalid_links.append((df.fieldname, docname, get_msg(df, docname)))
+						invalid_links.append({
+							"field": df.fieldname,
+							"value": docname,
+							"label": df.label,
+							"parent": df.parent
+						})
 
 					elif (
 						df.fieldname != "amended_from"

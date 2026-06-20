@@ -7,6 +7,8 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
+  "company",
+  "section_break_ydms",
   "letter_head_name",
   "source",
   "footer_source",
@@ -193,6 +195,17 @@
    "fieldtype": "HTML",
    "label": "Instructions",
    "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "College",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_ydms",
+   "fieldtype": "Section Break"
   }
  ],
  "icon": "fa fa-font",
@@ -200,7 +213,7 @@
  "links": [],
  "make_attachments_public": 1,
  "max_attachments": 3,
- "modified": "2024-04-12 10:30:25.793932",
+ "modified": "2026-04-28 11:17:12.014558",
  "modified_by": "Administrator",
  "module": "Printing",
  "name": "Letter Head",
@@ -223,6 +236,7 @@
    "role": "Desk User"
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

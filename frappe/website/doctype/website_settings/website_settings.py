@@ -19,9 +19,7 @@ class WebsiteSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 		from frappe.website.doctype.top_bar_item.top_bar_item import TopBarItem
-		from frappe.website.doctype.website_route_redirect.website_route_redirect import (
-			WebsiteRouteRedirect,
-		)
+		from frappe.website.doctype.website_route_redirect.website_route_redirect import WebsiteRouteRedirect
 
 		address: DF.SmallText | None
 		app_logo: DF.AttachImage | None
@@ -58,6 +56,7 @@ class WebsiteSettings(Document):
 		show_account_deletion_link: DF.Check
 		show_footer_on_login: DF.Check
 		show_language_picker: DF.Check
+		site_tagline: DF.Data | None
 		splash_image: DF.AttachImage | None
 		subdomain: DF.SmallText | None
 		title_prefix: DF.Data | None
