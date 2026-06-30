@@ -1140,7 +1140,7 @@ def get_active_website_users():
 def get_permission_query_conditions(user):
 	u = frappe.session.user
 	user_roles = frappe.get_roles(u)
-	if user == "Administrator":
+	if user == "Administrator" or "Admin" in user_roles:
 		return ""
 	if "System Manager" in user_roles or "ICT Admin" in user_roles:
 		company = frappe.db.get_value("Employee", {"user_id": u}, "company")
