@@ -260,7 +260,8 @@ class User(Document):
 		for field in ("first_name", "middle_name", "last_name"):
 			if field_value := self.get(field):
 				self.set(field, sanitize_html(field_value, always_sanitize=True))
-
+				
+	@frappe.whitelist()
 	def check_employee(self):
 		if frappe.db.exists("Employee", {"user_id": self.name}):
 			if frappe.db.get_value("Employee", {"user_id": self.name}, "status") in ("Inactive", "Left"):
