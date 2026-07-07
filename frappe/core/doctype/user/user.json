@@ -451,7 +451,6 @@
    "description": "These values will be automatically updated in transactions and also will be useful to restrict permissions for this user on transactions containing these values.",
    "fieldname": "sb2",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Defaults",
    "oldfieldtype": "Column Break",
    "permlevel": 1,
@@ -873,7 +872,7 @@
   }
  ],
  "make_attachments_public": 1,
- "modified": "2026-05-22 13:28:30.914422",
+ "modified": "2026-07-03 16:16:28.131414",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",

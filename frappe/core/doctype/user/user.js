@@ -76,13 +76,6 @@ frappe.ui.form.on("User", {
 	},
 
 	onload: function (frm) {
-		frappe.call({
-			method: "check_employee",
-			doc: frm.doc,
-			args: function(r){
-				frm.refresh_fields();
-			}
-		})
 		frm.can_edit_roles = has_access_to_edit_user();
 
 		if (frm.is_new() && frm.roles_editor) {
