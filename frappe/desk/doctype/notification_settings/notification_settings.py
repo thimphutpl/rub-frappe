@@ -82,6 +82,7 @@ def toggle_notifications(user: str, enable: bool = False):
 
 	if settings.enabled != enable:
 		if frappe.db.exists("User", user):
+			settings.ignore_permissions = True
 			settings.enabled = enable
 			settings.save()
 
