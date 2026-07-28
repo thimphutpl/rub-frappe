@@ -1138,6 +1138,7 @@ def get_active_website_users():
 
 
 def get_permission_query_conditions(user):
+	
 	u = frappe.session.user
 	user_roles = frappe.get_roles(u)
 	if user == "Administrator" or "Admin" in user_roles:
@@ -1157,6 +1158,11 @@ def get_permission_query_conditions(user):
 		return """(`tabUser`.name = {user})""".format(
 			user=frappe.db.escape(u)
 		)
+
+	if "Student" in user_roles:
+			return """(`tabUser`.name = {user})""".format(
+				user=frappe.db.escape(u)
+			)
 	return """(`tabUser`.name not in ({standard_users}))""".format(
 		standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
 	)
