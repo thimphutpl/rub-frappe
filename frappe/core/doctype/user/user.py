@@ -261,13 +261,6 @@ class User(Document):
 			if field_value := self.get(field):
 				self.set(field, sanitize_html(field_value, always_sanitize=True))
 				
-	@frappe.whitelist()
-	def check_employee(self):
-		if frappe.db.exists("Employee", {"user_id": self.name}):
-			if frappe.db.get_value("Employee", {"user_id": self.name}, "status") in ("Inactive", "Left"):
-				frappe.db.set_value("User", self.name, "enabled", 0)
-			else:
-				frappe.db.set_value("User", self.name, "enabled", 1)
 	def set_full_name(self):
 		self.full_name = " ".join(filter(None, [self.first_name,self.middle_name, self.last_name]))
 
@@ -1157,7 +1150,7 @@ def get_permission_query_conditions(user):
 				SELECT user_id
 				FROM `tabEmployee`
 				WHERE company = {company}
-			))""".format(
+			) or (not EXISTS(select 1 from `tabEmployee` where `tabUser`.name = `tabEmployee`.user_id)))""".format(
 				company=frappe.db.escape(company)
 			)
 	if "Employee" in user_roles:
