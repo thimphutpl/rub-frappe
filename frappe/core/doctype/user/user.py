@@ -1145,13 +1145,15 @@ def get_permission_query_conditions(user):
 		return ""
 	if "System Manager" in user_roles or "ICT Admin" in user_roles:
 		company = frappe.db.get_value("Employee", {"user_id": u}, "company")
-
+		#frappe.throw(str(company))
 		if company:
 			return """(`tabUser`.name IN (
 				SELECT user_id
 				FROM `tabEmployee`
 				WHERE company = {company}
-			) or (not EXISTS(select 1 from `tabEmployee` where `tabUser`.name = `tabEmployee`.user_id)))""".format(
+				UNION
+    			SELECT user FROM `tabStudent` WHERE company = {company}
+				)) and `tabUser`.enabled=1 """.format(
 				company=frappe.db.escape(company)
 			)
 	if "Employee" in user_roles:
