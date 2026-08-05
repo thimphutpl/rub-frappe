@@ -111,7 +111,7 @@ def get_permission_query_conditions(user):
 		return
 
 	roles = frappe.get_roles(user)
-	if "System Manager" in roles:
+	if "System Manager" in roles or "ICT Admin" in roles:
 		return """(`tabNotification Settings`.name != 'Administrator')"""
 
 	return f"""(`tabNotification Settings`.name = {frappe.db.escape(user)})"""
@@ -126,7 +126,7 @@ def has_permission(doc, ptype="read", user=None):
 	if user == "Administrator":
 		return True
 
-	if "System Manager" in frappe.get_roles(user):
+	if "System Manager" in frappe.get_roles(user) or "ICT Admin" in frappe.get_roles(user):
 		return doc.name != "Administrator"
 
 	return doc.name == user
