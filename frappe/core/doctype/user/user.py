@@ -748,7 +748,7 @@ class User(Document):
 			self.time_zone = get_system_timezone()
 
 	def check_roles_added(self):
-		student = employee = system_manager = 0
+		student = employee = system_manager = academic_user = 0
 		for role in self.roles:
 			if role.role == "Student":
 				student = 1
@@ -756,10 +756,14 @@ class User(Document):
 				employee = 1
 			if role.role == "System Manager":
 				system_manager = 1
+			if role.role == "Academics User":
+				academic_user = 1
 		if system_manager == 1 and frappe.session.user != "Administrator":
 			frappe.throw("Only Administrator can assign <b>System Manager</b> role to other users.", title="Role Assigment Error")
 		if student == 1 and employee == 1:
 			frappe.throw("User cannot be assigned with both <b>Student</b> and <b>Employee</b> roles.", title="Role Assigment Error")
+		if student == 1 and academic_user == 1:
+			frappe.throw("User cannot be assigned with both <b>Student</b> and <b>Academics User</b> roles.", title="Role Assigment Error")
 		if self.user_type != "System User" or self.roles or not self.is_new():
 			return
 
@@ -1248,7 +1252,7 @@ def throttle_user_creation():
 	if frappe.flags.in_import:
 		return
 
-	if frappe.db.get_creation_count("User", 100) > frappe.local.conf.get("throttle_user_limit", 100):
+	if frappe.db.get_creation_count("User",60) > frappe.local.conf.get("throttle_user_limit", 60):
 		frappe.throw(_("Too many User accounts are being created. Please wait a minute and try again."))
 
 
