@@ -1104,7 +1104,7 @@ export default class Grid {
 						as_dataurl: true,
 						allow_multiple: false,
 						restrictions: {
-							allowed_file_types: [".csv"],
+							allowed_file_types: [".csv", ".xls", ".xlsx"],
 						},
 						on_success(file) {
 							var data = frappe.utils.csv_to_array(
