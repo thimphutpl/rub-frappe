@@ -1141,57 +1141,123 @@ def get_active_website_users():
 	)[0][0]
 
 
-def get_permission_query_conditions(user):
+# def get_permission_query_conditions(user):
 	
-	u = frappe.session.user
-	user_roles = frappe.get_roles(u)
-	if user == "Administrator" or "Admin" in user_roles:
-		return ""
-	if "System Manager" in user_roles or "ICT Admin" in user_roles:
-		company = frappe.db.get_value("Employee", {"user_id": u}, "company")
-		#frappe.throw(str(company))
-		return """(
-			(
-				`tabUser`.name IN (
-					SELECT user_id
-					FROM `tabEmployee`
-					WHERE company = {company}
+# 	u = frappe.session.user
+# 	user_roles = frappe.get_roles(u)
+# 	if user == "Administrator" or "Admin" in user_roles:
+# 		return ""
+# 	if "System Manager" in user_roles or "ICT Admin" in user_roles:
+# 		company = frappe.db.get_value("Employee", {"user_id": u}, "company")
+# 		#frappe.throw(str(company))
+# 		return """(
+# 			(
+# 				`tabUser`.name IN (
+# 					SELECT user_id
+# 					FROM `tabEmployee`
+# 					WHERE company = {company}
 
-					UNION
+# 					UNION
 
-					SELECT user
-					FROM `tabStudent`
-					WHERE company = {company}
-				)
-				OR NOT EXISTS (
-					SELECT 1
-					FROM `tabEmployee`
-					WHERE `tabEmployee`.user_id = `tabUser`.name
+# 					SELECT user
+# 					FROM `tabStudent`
+# 					WHERE company = {company}
+# 				)
+# 				OR NOT EXISTS (
+# 					SELECT 1
+# 					FROM `tabEmployee`
+# 					WHERE `tabEmployee`.user_id = `tabUser`.name
 
-					UNION
+# 					UNION
 
-					SELECT 1
-					FROM `tabStudent`
-					WHERE `tabStudent`.user = `tabUser`.name
-				)
-			)
-			AND `tabUser`.enabled = 1
-		)""".format(
-			company=frappe.db.escape(company)
-		)
-	if "Employee" in user_roles:
-		return """(`tabUser`.name = {user})""".format(
-			user=frappe.db.escape(u)
-		)
+# 					SELECT 1
+# 					FROM `tabStudent`
+# 					WHERE `tabStudent`.user = `tabUser`.name
+# 				)
+# 			)
+# 			AND `tabUser`.enabled = 1
+# 		)""".format(
+# 			company=frappe.db.escape(company)
+# 		)
+# 	if "Employee" in user_roles:
+# 		return """(`tabUser`.name = {user})""".format(
+# 			user=frappe.db.escape(u)
+# 		)
 
-	if "Student" in user_roles:
-			return """(`tabUser`.name = {user})""".format(
-				user=frappe.db.escape(u)
-			)
-	return """(`tabUser`.name not in ({standard_users}))""".format(
-		standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
-	)
+# 	if "Student" in user_roles:
+# 			return """(`tabUser`.name = {user})""".format(
+# 				user=frappe.db.escape(u)
+# 			)
+# 	return """(`tabUser`.name not in ({standard_users}))""".format(
+# 		standard_users=", ".join(frappe.db.escape(user) for user in STANDARD_USERS)
+# 	)
+def get_permission_query_conditions(user=None):
 
+    user = user or frappe.session.user
+    user_roles = frappe.get_roles(user)
+
+    # Administrator and Admin
+    if user == "Administrator" or "Admin" in user_roles:
+        return ""
+
+    # Company System Manager / ICT Admin
+    if "System Manager" in user_roles or "ICT Admin" in user_roles:
+
+        company = frappe.db.get_value(
+            "Employee",
+            {"user_id": user},
+            "company"
+        )
+
+        if not company:
+            return "1=0"
+
+        company = frappe.db.escape(company)
+
+        return f"""
+            (
+                `tabUser`.`enabled` = 1
+                AND (
+                    EXISTS (
+                        SELECT 1
+                        FROM `tabEmployee` e
+                        WHERE e.user_id = `tabUser`.name
+                        AND e.company = {company}
+                    )
+
+                    OR EXISTS (
+                        SELECT 1
+                        FROM `tabStudent` s
+                        WHERE s.user = `tabUser`.name
+                        AND s.company = {company}
+                    )
+
+                    OR (
+                        NOT EXISTS (
+                            SELECT 1
+                            FROM `tabEmployee` e
+                            WHERE e.user_id = `tabUser`.name
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM `tabStudent` s
+                            WHERE s.user = `tabUser`.name
+                        )
+                    )
+                )
+            )
+        """
+
+    # Employee and Student
+    if "Employee" in user_roles or "Student" in user_roles:
+        return f"`tabUser`.name = {frappe.db.escape(user)}"
+
+    # Other users
+    standard_users = ", ".join(
+        frappe.db.escape(u) for u in STANDARD_USERS
+    )
+
+    return f"`tabUser`.name NOT IN ({standard_users})"
 
 	
 	# if user == "Administrator":
